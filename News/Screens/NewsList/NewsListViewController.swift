@@ -80,18 +80,22 @@ private extension NewsListViewController {
 
 extension NewsListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return viewModel.newsList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return .init()
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellType.newsCell.rawValue, for: indexPath) as! NewsCell
+        
+        return cell
     }
 }
 
 // MARK: - UITableViewDelegate
 
 extension NewsListViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
 }
 
 // MARK: - UISearchBarDelegate

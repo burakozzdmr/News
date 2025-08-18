@@ -8,5 +8,5 @@
 import Foundation
 
 class NewsListViewModel {
-    
+    private(set) var newsList: [News] = []
 }
