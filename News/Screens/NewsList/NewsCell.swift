@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class NewsCell: UITableViewCell {
     static let identifier = CellType.newsCell.rawValue
@@ -15,7 +16,7 @@ class NewsCell: UITableViewCell {
     
     private let newsImageView: UIImageView = {
         let imageView: UIImageView = .init()
-        imageView.image = .init()
+        imageView.image = .init(systemName: "photo.artframe")
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 8
@@ -86,7 +87,13 @@ class NewsCell: UITableViewCell {
 
 extension NewsCell {
     func configure(for news: News) {
+        newsTitleLabel.text = news.title
+        newsAuthorLabel.text = news.author
+        newsSubjectLabel.text = "Apple"
+        publishTimeLabel.text = "23m ago"
         
+        guard let urlString = news.urlToImage, let imageURL = URL(string: urlString) else { return }
+        newsImageView.kf.setImage(with: imageURL)
     }
 }
 
