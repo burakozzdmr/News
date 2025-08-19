@@ -22,10 +22,11 @@ class NewsService {
 
 extension NewsService: NewsServiceProtocol {
     func fetchNews(completion: @escaping (Result<NewsModel, NetworkError>) -> Void) {
-        let request = EndpointRouter.makeURLRequest(for: .topHeadlines(searchText: "Apple"), with: .GET)
+        let request = EndpointRouter.makeURLRequest(for: .everything(searchText: "Bitcoin"), with: .GET)
         
         switch request {
         case .success(let successRequest):
+            print(successRequest.url?.absoluteString ?? "")
             networkManager.sendRequest(
                 request: successRequest,
                 completion: completion

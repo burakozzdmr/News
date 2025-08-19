@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+protocol NewsListViewControllerProtocol: AnyObject {
+    func didUpdateData()
+}
+
 class NewsListViewController: UIViewController {
 
     // MARK: Properties
@@ -40,9 +44,11 @@ class NewsListViewController: UIViewController {
     
     // MARK: Inits
     
-    init(viewModel: NewsListViewModel) {
+    init(viewModel: NewsListViewModel = .init()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.viewModel.controllerDelegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -59,6 +65,7 @@ private extension NewsListViewController {
         configureNavigationBar()
         
         view.backgroundColor = .systemBackground
+        navigationItem.title = "News"
     }
     
     func addViews() {
@@ -85,7 +92,7 @@ extension NewsListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellType.newsCell.rawValue, for: indexPath) as! NewsCell
-        
+        cell.configure(for: viewModel.newsList[indexPath.row])
         return cell
     }
 }
@@ -102,6 +109,22 @@ extension NewsListViewController: UITableViewDelegate {
 
 extension NewsListViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            viewModel.fetchNews()
+        } else {
+            viewModel.searchNews(searchText: searchText)
+        }
+    }
+}
+
+// MARK: - NewsListViewControllerProtocol
+
+extension NewsListViewController: NewsListViewControllerProtocol {
+    func didUpdateData() {
+        DispatchQueue.main.async {
+            UIView.transition(with: self.newsListTableView, duration: 0.5, options: .transitionCrossDissolve) {
+                self.newsListTableView.reloadData()
+            }
+        }
     }
 }
