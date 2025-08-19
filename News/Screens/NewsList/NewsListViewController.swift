@@ -44,9 +44,11 @@ class NewsListViewController: UIViewController {
     
     // MARK: Inits
     
-    init(viewModel: NewsListViewModel) {
+    init(viewModel: NewsListViewModel = .init()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+        self.viewModel.controllerDelegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -63,6 +65,7 @@ private extension NewsListViewController {
         configureNavigationBar()
         
         view.backgroundColor = .systemBackground
+        navigationItem.title = "News"
     }
     
     func addViews() {

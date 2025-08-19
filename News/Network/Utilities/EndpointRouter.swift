@@ -24,10 +24,13 @@ extension EndpointRouter: EndpointRouterProtocol {
         case .everything(let searchText):
             guard var urlComponents = URLComponents(
                 string: NetworkConstants.NewsConstants.baseURL
-                + NetworkConstants.NewsConstants.everythingPath
-                + NetworkConstants.NewsConstants.apiKey) else { return .failure(.invalidURL) }
+                + NetworkConstants.NewsConstants.everythingPath) else { return .failure(.invalidURL) }
             
-            urlComponents.queryItems = [URLQueryItem(name: "q", value: searchText)]
+            urlComponents.queryItems = [
+                URLQueryItem(name: "q", value: searchText),
+                URLQueryItem(name: "apiKey", value: NetworkConstants.NewsConstants.apiKey)
+            ]
+            
             guard let requestURL = urlComponents.url else { return .failure(.requestFailedError) }
             
             var request: URLRequest = .init(url: requestURL)
@@ -37,10 +40,13 @@ extension EndpointRouter: EndpointRouterProtocol {
         case .topHeadlines(let searchText):
             guard var urlComponents = URLComponents(
                 string: NetworkConstants.NewsConstants.baseURL
-                + NetworkConstants.NewsConstants.topHeadlinesPath
-                + NetworkConstants.NewsConstants.apiKey) else { return .failure(.invalidURL) }
+                + NetworkConstants.NewsConstants.topHeadlinesPath) else { return .failure(.invalidURL) }
             
-            urlComponents.queryItems = [URLQueryItem(name: "q", value: searchText)]
+            urlComponents.queryItems = [
+                URLQueryItem(name: "q", value: searchText),
+                URLQueryItem(name: "apiKey", value: NetworkConstants.NewsConstants.apiKey)
+            ]
+            
             guard let requestURL = urlComponents.url else { return .failure(.requestFailedError) }
             
             var request: URLRequest = .init(url: requestURL)

@@ -20,6 +20,10 @@ class NewsListViewModel {
     
     init(newsService: NewsService = .init()) {
         self.newsService = newsService
+        
+        fetchNews()
+        
+        viewModelDelegate = self
     }
 }
 

@@ -36,6 +36,7 @@ class SplashViewController: UIViewController {
         super.viewDidLoad()
         
         configureView()
+        splashToTabBar()
     }
     
     // MARK: Publics

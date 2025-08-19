@@ -17,9 +17,10 @@ class NewsCell: UITableViewCell {
     private let newsImageView: UIImageView = {
         let imageView: UIImageView = .init()
         imageView.image = .init(systemName: "photo.artframe")
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
+        imageView.layer.cornerRadius = 12
+        imageView.backgroundColor = .systemGray6
         return imageView
     }()
     
@@ -27,49 +28,50 @@ class NewsCell: UITableViewCell {
         let label: UILabel = .init()
         label.text = ""
         label.textColor = .label
-        label.font = .systemFont(ofSize: 22, weight: .semibold)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textAlignment = .left
+        label.numberOfLines = 2
         return label
     }()
     
     private let newsAuthorLabel: UILabel = {
         let label: UILabel = .init()
         label.text = ""
-        label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 13, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textAlignment = .left
         return label
-    }()
-    
-    private let bottomStackView: UIStackView = {
-        let stackView: UIStackView = .init()
-        stackView.axis = .horizontal
-        stackView.distribution = .fillProportionally
-        stackView.spacing = 8
-        return stackView
     }()
     
     private let newsSubjectLabel: UILabel = {
         let label: UILabel = .init()
         label.text = ""
         label.textColor = .systemBlue
-        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         return label
     }()
     
     private let separatorView: UIView = {
         let view: UIView = .init()
-        view.backgroundColor = .separator
+        view.backgroundColor = .secondaryLabel
         view.clipsToBounds = true
+        view.layer.cornerRadius = 2
         return view
     }()
     
     private let publishTimeLabel: UILabel = {
         let label: UILabel = .init()
         label.text = ""
-        label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 13, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         return label
+    }()
+    
+    private let moreButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tintColor = .label
+        return button
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -110,40 +112,52 @@ private extension NewsCell {
             newsImageView,
             newsTitleLabel,
             newsAuthorLabel,
-            bottomStackView
+            newsSubjectLabel,
+            separatorView,
+            publishTimeLabel,
+            moreButton
         )
-        
-        bottomStackView.addArrangedSubview(newsSubjectLabel)
-        bottomStackView.addArrangedSubview(separatorView)
-        bottomStackView.addArrangedSubview(publishTimeLabel)
     }
     
     func configureLayout() {
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        
         newsImageView.snp.makeConstraints {
-            $0.top.equalTo(contentView).offset(16)
-            $0.leading.equalToSuperview().offset(16)
+            $0.leading.equalTo(contentView.layoutMarginsGuide)
+            $0.centerY.equalToSuperview()
             $0.width.height.equalTo(128)
         }
         
         newsTitleLabel.snp.makeConstraints {
             $0.top.equalTo(contentView).offset(16)
-            $0.leading.trailing.equalTo(newsImageView.snp.trailing).offset(16)
+            $0.leading.equalTo(newsImageView.snp.trailing).offset(16)
+            $0.trailing.equalTo(contentView.layoutMarginsGuide)
         }
         
         newsAuthorLabel.snp.makeConstraints {
-            $0.top.equalTo(newsTitleLabel.snp.bottom).offset(16)
-            $0.leading.trailing.equalTo(newsImageView.snp.trailing).offset(16)
-        }
-        
-        bottomStackView.snp.makeConstraints {
+            $0.top.equalTo(newsTitleLabel.snp.bottom).offset(8)
             $0.leading.equalTo(newsImageView.snp.trailing).offset(16)
-            $0.bottom.equalTo(contentView)
+            $0.trailing.equalTo(contentView.layoutMarginsGuide)
         }
         
-        separatorView.snp.makeConstraints { $0.width.height.equalTo(1) }
+        newsSubjectLabel.snp.makeConstraints {
+            $0.top.equalTo(newsAuthorLabel.snp.bottom).offset(48)
+            $0.leading.equalTo(newsImageView.snp.trailing).offset(8)
+        }
+        
+        separatorView.snp.makeConstraints {
+            $0.top.equalTo(newsAuthorLabel.snp.bottom).offset(48)
+            $0.leading.equalTo(newsSubjectLabel.snp.trailing).offset(8)
+            $0.width.height.equalTo(2)
+        }
+        
+        publishTimeLabel.snp.makeConstraints {
+            $0.top.equalTo(newsAuthorLabel.snp.bottom).offset(48)
+            $0.leading.equalTo(separatorView.snp.trailing).offset(8)
+        }
+        
+        moreButton.snp.makeConstraints {
+            $0.top.equalTo(newsAuthorLabel.snp.bottom).offset(48)
+            $0.trailing.equalTo(contentView.layoutMarginsGuide)
+            $0.width.height.equalTo(32)
+        }
     }
 }
