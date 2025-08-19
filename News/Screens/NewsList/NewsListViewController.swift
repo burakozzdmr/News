@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+protocol NewsListViewControllerProtocol: AnyObject {
+    func didUpdateData()
+}
+
 class NewsListViewController: UIViewController {
 
     // MARK: Properties
