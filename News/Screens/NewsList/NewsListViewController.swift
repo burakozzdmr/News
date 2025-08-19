@@ -101,7 +101,14 @@ extension NewsListViewController: UITableViewDataSource {
 
 extension NewsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        navigationController?.pushViewController(
+            NewsDetailViewController(
+                viewModel: NewsDetailViewModel(
+                    news: viewModel.newsList[indexPath.row]
+                )
+            ),
+            animated: true
+        )
     }
 }
 
