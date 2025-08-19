@@ -89,7 +89,7 @@ extension NewsListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellType.newsCell.rawValue, for: indexPath) as! NewsCell
-        
+        cell.configure(for: viewModel.newsList[indexPath.row])
         return cell
     }
 }
