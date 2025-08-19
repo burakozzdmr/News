@@ -1,0 +1,51 @@
+//
+//  EndpointRouter.swift
+//  News
+//
+//  Created by Burak Özdemir on 19.08.2025.
+//
+
+import Foundation
+
+enum EndpointType {
+    case everything(searchText: String)
+    case topHeadlines(searchText: String)
+}
+
+protocol EndpointRouterProtocol {
+    static func makeURLRequest(for endpoint: EndpointType, with httpMethod: HTTPMethod) -> Result<URLRequest, NetworkError>
+}
+
+class EndpointRouter { }
+
+extension EndpointRouter: EndpointRouterProtocol {
+    static func makeURLRequest(for endpoint: EndpointType, with httpMethod: HTTPMethod) -> Result<URLRequest, NetworkError> {
+        switch endpoint {
+        case .everything(let searchText):
+            guard var urlComponents = URLComponents(
+                string: NetworkConstants.NewsConstants.baseURL
+                + NetworkConstants.NewsConstants.everythingPath
+                + NetworkConstants.NewsConstants.apiKey) else { return .failure(.invalidURL) }
+            
+            urlComponents.queryItems = [URLQueryItem(name: "q", value: searchText)]
+            guard let requestURL = urlComponents.url else { return .failure(.requestFailedError) }
+            
+            var request: URLRequest = .init(url: requestURL)
+            request.httpMethod = httpMethod.rawValue
+            return .success(request)
+            
+        case .topHeadlines(let searchText):
+            guard var urlComponents = URLComponents(
+                string: NetworkConstants.NewsConstants.baseURL
+                + NetworkConstants.NewsConstants.topHeadlinesPath
+                + NetworkConstants.NewsConstants.apiKey) else { return .failure(.invalidURL) }
+            
+            urlComponents.queryItems = [URLQueryItem(name: "q", value: searchText)]
+            guard let requestURL = urlComponents.url else { return .failure(.requestFailedError) }
+            
+            var request: URLRequest = .init(url: requestURL)
+            request.httpMethod = httpMethod.rawValue
+            return .success(request)
+        }
+    }
+}
