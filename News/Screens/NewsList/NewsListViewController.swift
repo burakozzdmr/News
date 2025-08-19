@@ -106,6 +106,22 @@ extension NewsListViewController: UITableViewDelegate {
 
 extension NewsListViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            viewModel.fetchNews()
+        } else {
+            viewModel.searchNews(searchText: searchText)
+        }
+    }
+}
+
+// MARK: - NewsListViewControllerProtocol
+
+extension NewsListViewController: NewsListViewControllerProtocol {
+    func didUpdateData() {
+        DispatchQueue.main.async {
+            UIView.transition(with: self.newsListTableView, duration: 0.5, options: .transitionCrossDissolve) {
+                self.newsListTableView.reloadData()
+            }
+        }
     }
 }
