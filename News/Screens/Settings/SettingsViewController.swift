@@ -7,9 +7,12 @@
 
 import UIKit
 import SnapKit
+import SafariServices
 
 protocol SettingsViewControllerProtocol: AnyObject {
-    
+    func didChangeTheme(_ mode: Int)
+    func didUpdateNotification(_ isOn: Bool)
+    func openURL(_ sourceURL: String)
 }
 
 // MARK: - SettingsViewController
@@ -69,6 +72,18 @@ private extension SettingsViewController {
     }
 }
 
+// MARK: - Objective-C Methods
+
+@objc private extension SettingsViewController {
+    func themeTapped(_ sender: UISegmentedControl) {
+        viewModel.themeDidChange(mod: sender.selectedSegmentIndex)
+    }
+    
+    func notificationTapped(_ sender: UISwitch) {
+        
+    }
+}
+
 // MARK: - UITableViewDataSource
 
 extension SettingsViewController: UITableViewDataSource {
@@ -92,11 +107,13 @@ extension SettingsViewController: UITableViewDataSource {
         switch settingsType {
         case .theme:
             let segmentedControl = UISegmentedControl(items: ["Auto","Light", "Dark"])
+            segmentedControl.addTarget(self, action: #selector(themeTapped(_:)), for: .valueChanged)
             segmentedControl.selectedSegmentIndex = 0
             cell.accessoryView = segmentedControl
             
         case .notification:
             let notificationSwitch = UISwitch()
+            notificationSwitch.addTarget(self, action: #selector(notificationTapped(_:)), for: .valueChanged)
             cell.accessoryView = notificationSwitch
         case .rateUs, .privacyPolicy, .termsOfUse:
             cell.selectionStyle = .default
@@ -110,6 +127,7 @@ extension SettingsViewController: UITableViewDataSource {
 
 extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel.viewModelDelegate?.selectedItem(viewModel.settingsList[indexPath.section][indexPath.row])
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
@@ -117,5 +135,22 @@ extension SettingsViewController: UITableViewDelegate {
 // MARK: - SettingsControllerProtocol
 
 extension SettingsViewController: SettingsViewControllerProtocol {
+    func didUpdateNotification(_ isOn: Bool) {
+        print("Notification Status: \(isOn)")
+    }
     
+    func didChangeTheme(_ mode: Int) {
+        switch mode {
+        case 1: view.window?.overrideUserInterfaceStyle = .light
+        case 2: view.window?.overrideUserInterfaceStyle = .dark
+        default: view.window?.overrideUserInterfaceStyle = .unspecified
+        }
+    }
+    
+    func openURL(_ sourceURL: String) {
+        guard let urlToOpen = URL(string: sourceURL) else { return }
+        let safariVC = SFSafariViewController(url: urlToOpen)
+        safariVC.modalPresentationStyle = .overFullScreen
+        present(safariVC, animated: true)
+    }
 }
