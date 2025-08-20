@@ -47,10 +47,10 @@ class SplashViewController: UIViewController {
                 return
             }
             
-            let newsListNavController = UINavigationController(rootViewController: NewsListViewController())
+            let tabBarController = TabBarController()
             
-            UIView.transition(with: self.view, duration: 0.75, options: .transitionCrossDissolve) {
-                sceneDelegate.window?.rootViewController = newsListNavController
+            UIView.transition(with: self.view, duration: 0.3, options: .transitionCrossDissolve) {
+                sceneDelegate.window?.rootViewController = tabBarController
             }
         }
     }
