@@ -46,6 +46,7 @@ extension TabBarController {
         navController.tabBarItem.image = image
         navController.navigationBar.prefersLargeTitles = true
         viewController.navigationItem.largeTitleDisplayMode = .always
+        viewController.title = title
         return navController
     }
 }

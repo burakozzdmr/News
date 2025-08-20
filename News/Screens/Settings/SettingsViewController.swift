@@ -22,6 +22,7 @@ class SettingsViewController: UIViewController {
         let tableView: UITableView = .init(frame: .zero, style: .insetGrouped)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return tableView
     }()
 
@@ -71,12 +72,37 @@ private extension SettingsViewController {
 // MARK: - UITableViewDataSource
 
 extension SettingsViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.settingsList.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return viewModel.settingsList[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return .init()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) 
+        let currentCell = viewModel.settingsList[indexPath.section]
+        let settingsType = currentCell[indexPath.row].settingsType
+        
+        cell.tintColor = .label
+        cell.textLabel?.text = currentCell[indexPath.row].settingsName
+        cell.imageView?.image = .init(systemName: currentCell[indexPath.row].settingsIcon)
+        
+        switch settingsType {
+        case .theme:
+            let segmentedControl = UISegmentedControl(items: ["Auto","Light", "Dark"])
+            segmentedControl.selectedSegmentIndex = 0
+            cell.accessoryView = segmentedControl
+            
+        case .notification:
+            let notificationSwitch = UISwitch()
+            cell.accessoryView = notificationSwitch
+        case .rateUs, .privacyPolicy, .termsOfUse:
+            cell.selectionStyle = .default
+            cell.accessoryType = .disclosureIndicator
+        }
+        return cell
     }
 }
 
@@ -84,7 +110,7 @@ extension SettingsViewController: UITableViewDataSource {
 
 extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
