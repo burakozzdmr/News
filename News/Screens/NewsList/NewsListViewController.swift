@@ -95,6 +95,12 @@ extension NewsListViewController: UITableViewDataSource {
         cell.configure(for: viewModel.newsList[indexPath.row])
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == viewModel.newsList.count - 3 {
+            viewModel.loadMore()
+        }
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -109,6 +115,8 @@ extension NewsListViewController: UITableViewDelegate {
             ),
             animated: true
         )
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
@@ -119,8 +127,13 @@ extension NewsListViewController: UISearchBarDelegate {
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             viewModel.fetchNews()
         } else {
+            print(searchText)
             viewModel.searchNews(searchText: searchText)
         }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.fetchNews()
     }
 }
 

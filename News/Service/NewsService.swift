@@ -8,8 +8,8 @@
 import Foundation
 
 protocol NewsServiceProtocol {
-    func fetchNews(completion: @escaping (Result<NewsModel, NetworkError>) -> Void)
-    func searchNews(searchText: String, completion: @escaping (Result<NewsModel, NetworkError>) -> Void)
+    func fetchNews(query: String, page: Int, pageSize: Int, completion: @escaping (Result<NewsModel, NetworkError>) -> Void)
+    func searchNews(searchText: String, page: Int, pageSize: Int, completion: @escaping (Result<NewsModel, NetworkError>) -> Void)
 }
 
 class NewsService {
@@ -21,8 +21,8 @@ class NewsService {
 }
 
 extension NewsService: NewsServiceProtocol {
-    func fetchNews(completion: @escaping (Result<NewsModel, NetworkError>) -> Void) {
-        let request = EndpointRouter.makeURLRequest(for: .everything(searchText: "Bitcoin"), with: .GET)
+    func fetchNews(query: String, page: Int, pageSize: Int, completion: @escaping (Result<NewsModel, NetworkError>) -> Void) {
+        let request = EndpointRouter.makeURLRequest(for: .everything(searchText: query, page: page, pageSize: pageSize), with: .GET)
         
         switch request {
         case .success(let successRequest):
@@ -36,11 +36,12 @@ extension NewsService: NewsServiceProtocol {
         }
     }
     
-    func searchNews(searchText: String, completion: @escaping (Result<NewsModel, NetworkError>) -> Void) {
-        let request = EndpointRouter.makeURLRequest(for: .everything(searchText: searchText), with: .GET)
+    func searchNews(searchText: String, page: Int, pageSize: Int, completion: @escaping (Result<NewsModel, NetworkError>) -> Void) {
+        let request = EndpointRouter.makeURLRequest(for: .everything(searchText: searchText, page: page, pageSize: pageSize), with: .GET)
         
         switch request {
         case .success(let successRequest):
+            print(successRequest.url?.absoluteString ?? "")
             networkManager.sendRequest(
                 request: successRequest,
                 completion: completion

@@ -8,8 +8,8 @@
 import Foundation
 
 enum EndpointType {
-    case everything(searchText: String)
-    case topHeadlines(searchText: String)
+    case everything(searchText: String, page: Int, pageSize: Int)
+    case topHeadlines(searchText: String, page: Int, pageSize: Int)
 }
 
 protocol EndpointRouterProtocol {
@@ -21,13 +21,15 @@ class EndpointRouter { }
 extension EndpointRouter: EndpointRouterProtocol {
     static func makeURLRequest(for endpoint: EndpointType, with httpMethod: HTTPMethod) -> Result<URLRequest, NetworkError> {
         switch endpoint {
-        case .everything(let searchText):
+        case .everything(let searchText, let page, let pageSize):
             guard var urlComponents = URLComponents(
                 string: NetworkConstants.NewsConstants.baseURL
                 + NetworkConstants.NewsConstants.everythingPath) else { return .failure(.invalidURL) }
             
             urlComponents.queryItems = [
                 URLQueryItem(name: "q", value: searchText),
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "pageSize", value: "\(pageSize)"),
                 URLQueryItem(name: "apiKey", value: NetworkConstants.NewsConstants.apiKey)
             ]
             
@@ -37,13 +39,15 @@ extension EndpointRouter: EndpointRouterProtocol {
             request.httpMethod = httpMethod.rawValue
             return .success(request)
             
-        case .topHeadlines(let searchText):
+        case .topHeadlines(let searchText, let page, let pageSize):
             guard var urlComponents = URLComponents(
                 string: NetworkConstants.NewsConstants.baseURL
                 + NetworkConstants.NewsConstants.topHeadlinesPath) else { return .failure(.invalidURL) }
             
             urlComponents.queryItems = [
                 URLQueryItem(name: "q", value: searchText),
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "pageSize", value: "\(pageSize)"),
                 URLQueryItem(name: "apiKey", value: NetworkConstants.NewsConstants.apiKey)
             ]
             
