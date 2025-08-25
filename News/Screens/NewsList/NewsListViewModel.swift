@@ -13,10 +13,13 @@ protocol NewsListViewModelProtocol: AnyObject {
 }
 
 class NewsListViewModel {
-    private(set) var newsList: [News] = []
     private let newsService: NewsServiceProtocol
+    
     weak var viewModelDelegate: NewsListViewModelProtocol?
     weak var controllerDelegate: NewsListViewControllerProtocol?
+    
+    private(set) var newsList: [News] = []
+    
     
     init(newsService: NewsService = .init()) {
         self.newsService = newsService
