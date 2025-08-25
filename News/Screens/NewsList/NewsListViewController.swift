@@ -1,0 +1,150 @@
+//
+//  NewsListViewController.swift
+//  News
+//
+//  Created by Burak Özdemir on 18.08.2025.
+//
+
+import UIKit
+import SnapKit
+
+protocol NewsListViewControllerProtocol: AnyObject {
+    func didUpdateData()
+}
+
+class NewsListViewController: UIViewController {
+
+    // MARK: Properties
+    
+    private lazy var searchController: UISearchController = {
+        let searchController: UISearchController = .init(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Search something..."
+        return searchController
+    }()
+    
+    private lazy var newsListTableView: UITableView = {
+        let tableView: UITableView = .init()
+        tableView.rowHeight = 180
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(NewsCell.self, forCellReuseIdentifier: CellType.newsCell.rawValue)
+        return tableView
+    }()
+    
+    private let viewModel: NewsListViewModel
+    
+    // MARK: Life Cycles
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        configureView()
+    }
+    
+    // MARK: Inits
+    
+    init(viewModel: NewsListViewModel = .init()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        
+        self.viewModel.controllerDelegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Privates
+
+private extension NewsListViewController {
+    func configureView() {
+        addViews()
+        configureLayout()
+        configureNavigationBar()
+        
+        view.backgroundColor = .systemBackground
+        navigationItem.title = "News"
+    }
+    
+    func addViews() {
+        view.addSubview(newsListTableView)
+    }
+    
+    func configureLayout() {
+        newsListTableView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+    
+    func configureNavigationBar() {
+        navigationItem.searchController = searchController
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension NewsListViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.newsList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellType.newsCell.rawValue, for: indexPath) as! NewsCell
+        cell.configure(for: viewModel.newsList[indexPath.row])
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == viewModel.newsList.count - 3 {
+            viewModel.loadMore()
+        }
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension NewsListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        navigationController?.pushViewController(
+            NewsDetailViewController(
+                viewModel: NewsDetailViewModel(
+                    news: viewModel.newsList[indexPath.row]
+                )
+            ),
+            animated: true
+        )
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+// MARK: - UISearchBarDelegate
+
+extension NewsListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            viewModel.fetchNews()
+        } else {
+            print(searchText)
+            viewModel.searchNews(searchText: searchText)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.fetchNews()
+    }
+}
+
+// MARK: - NewsListViewControllerProtocol
+
+extension NewsListViewController: NewsListViewControllerProtocol {
+    func didUpdateData() {
+        DispatchQueue.main.async {
+            UIView.transition(with: self.newsListTableView, duration: 0.5, options: .transitionCrossDissolve) {
+                self.newsListTableView.reloadData()
+            }
+        }
+    }
+}
