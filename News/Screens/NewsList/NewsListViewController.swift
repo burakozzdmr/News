@@ -122,6 +122,10 @@ extension NewsListViewController: UISearchBarDelegate {
             viewModel.searchNews(searchText: searchText)
         }
     }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.fetchNews()
+    }
 }
 
 // MARK: - NewsListViewControllerProtocol
